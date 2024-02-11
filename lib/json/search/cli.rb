@@ -8,12 +8,24 @@ module Json
       class Error < StandardError; end
 
       def search(keyword)
-        collection = parsed_json
-
         collection.select {|hash| hash["full_name"]&.downcase =~ /#{keyword}/}
       end
 
+      def duplicate_email
+        emails = collection.map(&:values).flatten
+
+        collection.inject([]) do |array, hash|
+          array << hash if emails.select { |email| email == hash["email"] }.size > 1
+
+          array
+        end
+      end
+
       private
+
+      def collection
+        parsed_json["data"]
+      end
 
       def parsed_json
         @parsed_json ||= begin
@@ -21,7 +33,7 @@ module Json
           file = File.read path
           json = JSON.parse file
 
-          json["data"]
+          json
         end
       end
     end
