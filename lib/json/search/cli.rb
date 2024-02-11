@@ -1,4 +1,6 @@
 require "json/search/cli/version"
+require 'json'
+require 'pry'
 
 module Json
   module Search
